@@ -1,8 +1,6 @@
 import React, { useRef } from "react"
 import { View, Animated } from "react-native"
 import { WIDTH_SCREEN } from "./../../constants/dimensions"
-import { useNavigation } from "@react-navigation/native"
-import { DETAIL_ROUTE } from "./../../constants/routes"
 import Card from "./../common/Card"
 
 const SPACING = 10
@@ -10,9 +8,12 @@ const ITEM_SIZE = WIDTH_SCREEN * 0.72
 const EMPTY_ITEM_SIZE = (WIDTH_SCREEN - ITEM_SIZE) / 2
 
 function Carrousel(props) {
-    const { data } = props
-    const navigation = useNavigation()
+    const { data, onCardSelect } = props
     const scrollX = useRef(new Animated.Value(0)).current
+
+    function handlePress(index = 0) {
+        if (onCardSelect && typeof onCardSelect === "function") onCardSelect(index)
+    }
 
     return (
         <>
@@ -20,7 +21,7 @@ function Carrousel(props) {
                 <Animated.FlatList
                     showsHorizontalScrollIndicator={false}
                     data={[{ key: "empty-left" }, ...data, { key: "empty-right" }]}
-                    keyExtractor={(item) => item.key}
+                    keyExtractor={({ id }) => `${id}`}
                     horizontal
                     bounces={false}
                     decelerationRate={0.2}
@@ -31,7 +32,7 @@ function Carrousel(props) {
                     })}
                     scrollEventThrottle={16}
                     renderItem={({ item, index }) => {
-                        if (!item.poster) {
+                        if (!item.id) {
                             return <View style={{ width: EMPTY_ITEM_SIZE }} />
                         }
 
@@ -51,9 +52,10 @@ function Carrousel(props) {
                                     }}
                                 >
                                     <Card
-                                        onPress={() => navigation.navigate(DETAIL_ROUTE, { param: data[index] })}
-                                        image={item.poster}
-                                        title={item.title}
+                                        onPress={() => handlePress(index)}
+                                        image={item.sprites.front_default ? item.sprites.front_default : null}
+                                        title={item.name}
+                                        description={item.base_experience}
                                     />
                                 </Animated.View>
                             </View>
@@ -67,6 +69,7 @@ function Carrousel(props) {
 
 Carrousel.defaultProps = {
     data: [],
+    onCardSelect: null,
 }
 
 export default Carrousel

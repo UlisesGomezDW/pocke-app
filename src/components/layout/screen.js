@@ -3,6 +3,7 @@ import { SafeAreaView, View } from "react-native"
 import { CURRENT_PLATFORM, IOS } from "./../../constants/platform"
 import { WHITE } from "./../../constants/colors"
 import { STATUS_BAR_HEIGHT } from "./../../constants/dimensions"
+import { StatusBar } from "expo-status-bar"
 
 export const CUSTOM_SCREEN = "custom"
 
@@ -26,7 +27,12 @@ function Screen(props) {
                 {CURRENT_PLATFORM === IOS ? (
                     <SafeAreaView style={[SCREEN_STYLE, { ...style }]}>{children}</SafeAreaView>
                 ) : (
-                    <View style={[{ ...SCREEN_STYLE, paddingTop: STATUS_BAR_HEIGHT }, { ...style }]}>{children}</View>
+                    <>
+                        <StatusBar style={"dark"} />
+                        <View style={[{ ...SCREEN_STYLE, paddingTop: STATUS_BAR_HEIGHT }, { ...style }]}>
+                            {children}
+                        </View>
+                    </>
                 )}
             </>
         )
